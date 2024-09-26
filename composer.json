@@ -1,0 +1,125 @@
+{
+    "name": "echo-fustion/framework",
+    "description": "The echoFusion framework",
+    "type": "project",
+    "license": "MIT",
+    "keywords": ["echoFusion", "framework"],
+    "support": {
+        "issues": "https://github.com/echo-fusion/framework/issues",
+        "source": "https://github.com/echo-fusion/framework"
+    },
+    "authors": [
+        {
+            "name": "Amir Shadanfar",
+            "email": "a.shadanfar.it@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
+        "echo-fusion/routemanager": "dev-master",
+        "echo-fusion/servicemanager": "dev-master",
+        "echo-fusion/middlewaremanager": "dev-master",
+        "echo-fusion/responsemanager": "dev-master",
+        "echo-fusion/eventmanager": "dev-master",
+        "echo-fusion/modulemanager": "dev-master",
+        "echo-fusion/pluginmanager": "dev-master"
+    },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "echo-fusion/routemanager",
+                "version": "dev-master",
+                "source": {
+                    "url": "../routemanager",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "echo-fusion/servicemanager",
+                "version": "dev-master",
+                "source": {
+                    "url": "../servicemanager",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "echo-fusion/middlewaremanager",
+                "version": "dev-master",
+                "source": {
+                    "url": "../middlewaremanager",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "echo-fusion/responsemanager",
+                "version": "dev-master",
+                "source": {
+                    "url": "../responsemanager",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "echo-fusion/eventmanager",
+                "version": "dev-master",
+                "source": {
+                    "url": "../eventmanager",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "echo-fusion/modulemanager",
+                "version": "dev-master",
+                "source": {
+                    "url": "../modulemanager",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "echo-fusion/pluginmanager",
+                "version": "dev-master",
+                "source": {
+                    "url": "../pluginmanager",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Framework\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

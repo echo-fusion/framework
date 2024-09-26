@@ -1,0 +1,99 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "359b26e6e9e4d59b439e04e7595f8845",
+    "packages": [
+        {
+            "name": "echo-fusion/eventmanager",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "../eventmanager",
+                "reference": "master"
+            },
+            "type": "library"
+        },
+        {
+            "name": "echo-fusion/middlewaremanager",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "../middlewaremanager",
+                "reference": "master"
+            },
+            "type": "library"
+        },
+        {
+            "name": "echo-fusion/modulemanager",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "../modulemanager",
+                "reference": "master"
+            },
+            "type": "library"
+        },
+        {
+            "name": "echo-fusion/pluginmanager",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "../pluginmanager",
+                "reference": "master"
+            },
+            "type": "library"
+        },
+        {
+            "name": "echo-fusion/responsemanager",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "../responsemanager",
+                "reference": "master"
+            },
+            "type": "library"
+        },
+        {
+            "name": "echo-fusion/routemanager",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "../routemanager",
+                "reference": "master"
+            },
+            "type": "library"
+        },
+        {
+            "name": "echo-fusion/servicemanager",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "../servicemanager",
+                "reference": "master"
+            },
+            "type": "library"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "echo-fusion/routemanager": 20,
+        "echo-fusion/servicemanager": 20,
+        "echo-fusion/middlewaremanager": 20,
+        "echo-fusion/responsemanager": 20,
+        "echo-fusion/eventmanager": 20,
+        "echo-fusion/modulemanager": 20,
+        "echo-fusion/pluginmanager": 20
+    },
+    "prefer-stable": true,
+    "prefer-lowest": false,
+    "platform": {
+        "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
+    },
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
+}
