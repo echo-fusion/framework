@@ -16,97 +16,72 @@
     ],
     "require": {
         "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
-        "echo-fusion/routemanager": "dev-master",
-        "echo-fusion/servicemanager": "dev-master",
-        "echo-fusion/middlewaremanager": "dev-master",
-        "echo-fusion/responsemanager": "dev-master",
-        "echo-fusion/eventmanager": "dev-master",
-        "echo-fusion/modulemanager": "dev-master",
-        "echo-fusion/pluginmanager": "dev-master"
+        "ext-pdo": "*",
+        "ext-simplexml": "*",
+        "echo-fusion/codestandard": "0.x-dev",
+        "echo-fusion/servicemanager": "0.x-dev",
+        "echo-fusion/routemanager": "0.x-dev",
+        "echo-fusion/middlewaremanager": "0.x-dev",
+        "echo-fusion/responsemanager": "0.x-dev",
+        "echo-fusion/eventmanager": "0.x-dev",
+        "echo-fusion/modulemanager": "0.x-dev",
+        "echo-fusion/pluginmanager": "0.x-dev"
     },
     "repositories": [
         {
-            "type": "package",
-            "package": {
-                "name": "echo-fusion/routemanager",
-                "version": "dev-master",
-                "source": {
-                    "url": "../routemanager",
-                    "type": "git",
-                    "reference": "master"
-                }
+            "type": "path",
+            "url": "../codestandard",
+            "options": {
+                "symlink": true
             }
         },
         {
-            "type": "package",
-            "package": {
-                "name": "echo-fusion/servicemanager",
-                "version": "dev-master",
-                "source": {
-                    "url": "../servicemanager",
-                    "type": "git",
-                    "reference": "master"
-                }
+            "type": "path",
+            "url": "../routemanager",
+            "options": {
+                "symlink": true
             }
         },
         {
-            "type": "package",
-            "package": {
-                "name": "echo-fusion/middlewaremanager",
-                "version": "dev-master",
-                "source": {
-                    "url": "../middlewaremanager",
-                    "type": "git",
-                    "reference": "master"
-                }
+            "type": "path",
+            "url": "../servicemanager",
+            "options": {
+                "symlink": true
             }
         },
         {
-            "type": "package",
-            "package": {
-                "name": "echo-fusion/responsemanager",
-                "version": "dev-master",
-                "source": {
-                    "url": "../responsemanager",
-                    "type": "git",
-                    "reference": "master"
-                }
+            "type": "path",
+            "url": "../middlewaremanager",
+            "options": {
+                "symlink": true
             }
         },
         {
-            "type": "package",
-            "package": {
-                "name": "echo-fusion/eventmanager",
-                "version": "dev-master",
-                "source": {
-                    "url": "../eventmanager",
-                    "type": "git",
-                    "reference": "master"
-                }
+            "type": "path",
+            "url": "../responsemanager",
+            "options": {
+                "symlink": true
             }
         },
         {
-            "type": "package",
-            "package": {
-                "name": "echo-fusion/modulemanager",
-                "version": "dev-master",
-                "source": {
-                    "url": "../modulemanager",
-                    "type": "git",
-                    "reference": "master"
-                }
+            "type": "path",
+            "url": "../eventmanager",
+            "options": {
+                "symlink": true
             }
         },
         {
-            "type": "package",
-            "package": {
-                "name": "echo-fusion/pluginmanager",
-                "version": "dev-master",
-                "source": {
-                    "url": "../pluginmanager",
-                    "type": "git",
-                    "reference": "master"
-                }
+            "type": "path",
+            "url": "../modulemanager",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../pluginmanager",
+            "options": {
+                "symlink": true
             }
         }
     ],
@@ -120,6 +95,6 @@
 
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }
