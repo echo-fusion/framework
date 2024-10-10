@@ -23,8 +23,10 @@
         "echo-fusion/middlewaremanager": "^1.0"
     },
     "require-dev": {
+        "phpunit/phpunit": "^9.5",
         "friendsofphp/php-cs-fixer": "dev-master",
-        "echo-fusion/codestandard": "^1.0"
+        "echo-fusion/codestandard": "^1.0",
+        "vimeo/psalm": "5.x-dev"
     },
     "autoload": {
         "psr-4": {
