@@ -17,9 +17,11 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use function array_map;
 use function array_values;
 use function implode;
 use function is_subclass_of;
+use function rawurldecode;
 use function sprintf;
 
 /**
@@ -53,7 +55,8 @@ final class RouteHandler implements RequestHandlerInterface
         }
 
         $route = $match->getRoute();
-        $params = $match->getParams();
+        // the router matches the encoded path (/caf%C3%A9); an action wants the real value (café)
+        $params = array_map(static fn (string $value): string => rawurldecode($value), $match->getParams());
 
         $request = $request->withAttribute('route', $route)->withAttribute('route.params', $params);
         foreach ($params as $name => $value) {

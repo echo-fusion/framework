@@ -108,6 +108,15 @@ final class ApplicationTest extends TestCase
         $this->assertSame(9, $data['id']);
     }
 
+    public function testPlaceholderValuesAreUrlDecoded(): void
+    {
+        $app = TestApp::create(['routes' => "<?php return static function (\\EchoFusion\\Contracts\\RouteManager\\RouteRegistrarInterface \$router) { \$router->get('hello', '/hello/{name}', fn (string \$name) => \$name, ['name' => '[^/]+']); };"]);
+
+        $this->assertSame('José Smith', (string) $this->get($app, '/hello/' . rawurlencode('José Smith'))->getBody());
+        $this->assertSame('a/b', (string) $this->get($app, '/hello/a%2Fb')->getBody(), 'an encoded slash stays one segment but arrives decoded');
+        $this->assertSame('<b>', (string) $this->get($app, '/hello/%3Cb%3E')->getBody());
+    }
+
     public function testTheReturnValueBecomesTheResponse(): void
     {
         $app = $this->app([

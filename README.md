@@ -83,10 +83,10 @@ Response ◄─ ResponsePrepared ◄──────────────�
         any exception ─► ExceptionRaised ─► error handler
 ```
 
-* The router matches the request. No match is a 404, a wrong method on an existing path a 405 with an `Allow` header.
+* The router matches the request. A placeholder matches letters, digits, `_` and `-` unless you give it a constraint (`'constraints' => ['name' => '[^/]+']`). No match is a 404, a wrong method on an existing path a 405 with an `Allow` header.
 * The route's middleware runs inside the global middleware. A name is looked up in `middleware.route`; a class name works too.
 * The **action** is a closure, `[Controller::class, 'method']` (the controller is built by the container) or the name of an invokable class. Its arguments come from the signature:
-  * a parameter named like a route placeholder gets the value, converted to the parameter's type (`/posts/{id}` with `int $id` gives an int; a value that is not a number is a 404);
+  * a parameter named like a route placeholder gets the value, URL-decoded (`/hello/caf%C3%A9` gives `café`) and converted to the parameter's type (`/posts/{id}` with `int $id` gives an int; a value that is not a number is a 404);
   * `ServerRequestInterface` gets the request; the placeholders are also request attributes (`route`, `route.params`, `id`);
   * any other class type is taken from the container;
   * otherwise the default value is used.
