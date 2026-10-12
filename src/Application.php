@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EchoFusion\Framework;
 
 use Closure;
+use Composer\InstalledVersions;
 use Dotenv\Dotenv;
 use EchoFusion\AuthManager\Providers\AuthManagerProvider;
 use EchoFusion\ConfigManager\Config;
@@ -21,6 +22,9 @@ use EchoFusion\Contracts\TemplateManager\TemplateManagerInterface;
 use EchoFusion\DatabaseManager\Providers\DatabaseManagerProvider;
 use EchoFusion\Framework\Bootstrap\ConfigLoader;
 use EchoFusion\Framework\Bootstrap\CoreServices;
+use EchoFusion\Framework\Console\Commands;
+use EchoFusion\Framework\Console\Console;
+use EchoFusion\Framework\Console\Output;
 use EchoFusion\Framework\Events\ApplicationBooted;
 use EchoFusion\Framework\Events\ExceptionRaised;
 use EchoFusion\Framework\Events\RequestReceived;
@@ -218,6 +222,43 @@ final class Application
         }
 
         $emitter->emit($this->handle($request), $request);
+    }
+
+    /**
+     * The command line entry point: the framework's commands plus the ones listed in `config/console.php`.
+     */
+    public function console(?Output $output = null): Console
+    {
+        $this->boot();
+
+        $core = [
+            new Commands\AboutCommand($this, $this->container),
+            new Commands\RouteListCommand($this->container),
+            new Commands\ConfigShowCommand($this->container),
+            new Commands\ServeCommand($this),
+            new Commands\CacheClearCommand($this),
+            new Commands\MigrateCommand($this, $this->container),
+            new Commands\MigrateRollbackCommand($this, $this->container),
+            new Commands\MigrateStatusCommand($this, $this->container),
+            new Commands\MakeControllerCommand($this),
+            new Commands\MakeMigrationCommand($this),
+            new Commands\MakeCommandCommand($this),
+        ];
+
+        $own = $this->config->get('console.commands', []);
+        $version = InstalledVersions::isInstalled('echo-fusion/framework') ? (InstalledVersions::getPrettyVersion('echo-fusion/framework') ?? 'dev') : 'dev';
+
+        return new Console($this->container, [...$core, ...(is_array($own) ? $own : [])], $output ?? new Output(), $this->isDebug(), $version);
+    }
+
+    /**
+     * Run a console command and return the exit code: `exit($app->runConsole($argv));`.
+     *
+     * @param list<string> $argv the raw `$argv`, script name first
+     */
+    public function runConsole(array $argv, ?Output $output = null): int
+    {
+        return $this->console($output)->run($argv);
     }
 
     public function getContainer(): ServiceManager
