@@ -9,6 +9,8 @@ php bin/console migrate     # only if you use the database
 composer serve              # http://localhost:8000
 ```
 
+Want to see a finished application first? `composer create-project echo-fusion/echo-fusion my-blog dev-blog` installs the [example blog](../examples/blog) with demo data (admin panel at `/admin`).
+
 You need PHP 8.1, 8.2 or 8.3 with `mbstring` and `pdo` (plus the PDO driver of your database).
 
 ## What is in the folder
