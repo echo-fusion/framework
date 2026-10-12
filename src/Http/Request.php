@@ -340,11 +340,11 @@ class Request
         }
 
         $parsed = $this->request->getParsedBody();
-        if (is_array($parsed)) {
+        if (is_array($parsed) && $parsed !== []) {
             return $this->form = $parsed;
         }
 
-        // PHP only fills $_POST for POST: PUT, PATCH and DELETE forms have to be read from the body
+        // PHP only fills $_POST for POST, and gives an empty array for PUT, PATCH and DELETE: read their forms from the body
         if (str_contains(strtolower($this->request->getHeaderLine('Content-Type')), 'application/x-www-form-urlencoded')) {
             parse_str($this->body(), $fields);
 
