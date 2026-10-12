@@ -79,12 +79,12 @@ final class ApiController
         return ['data' => $this->posts->find($id)];
     }
 
-    public function destroy(Request $request, int $id): null
+    public function destroy(Request $request, int $id): void
     {
         $this->ownedPost($request, $id);
         $this->posts->delete($id);
 
-        return null; // 204 No Content
+        // nothing is returned: the answer is 204 No Content
     }
 
     /**

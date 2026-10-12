@@ -4,7 +4,19 @@ A small, complete application built with the [EchoFusion framework](../../README
 
 Read the code in this order: `config/routes.php`, `app/Http/Controllers/PostController.php`, `app/Repositories/PostRepository.php`, `resources/templates/posts/`.
 
-## Run it
+## Install
+
+The ready-made version, on the `blog` branch of the skeleton:
+
+```bash
+composer create-project echo-fusion/echo-fusion my-blog dev-blog
+cd my-blog
+composer serve                 # http://localhost:8000
+```
+
+`create-project` copies `.env`, creates the SQLite database and fills it with demo data. Without the last argument (`dev-blog`) you get the empty skeleton.
+
+## Run it from this repository
 
 ```bash
 cd examples/blog

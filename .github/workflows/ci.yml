@@ -91,3 +91,43 @@ jobs:
             exit 1
           fi
         shell: bash
+
+  example:
+    name: Example blog / PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.1', '8.3']
+
+    defaults:
+      run:
+        working-directory: examples/blog
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer
+          coverage: none
+
+      - name: Install (the framework comes from Packagist, as it does for a user)
+        run: composer install --no-progress --prefer-dist
+
+      - name: Check code style
+        run: composer cs-check
+
+      - name: Migrate and seed
+        run: |
+          cp .env.example .env
+          php bin/console migrate
+          php bin/console db:seed
+
+      - name: Run the tests
+        run: composer test
