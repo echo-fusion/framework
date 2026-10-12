@@ -254,6 +254,93 @@ Auto-wiring builds any class whose constructor asks for classes the container kn
 
 A **module** declares data: config, providers, routes and a template directory (see [modulemanager](https://github.com/echo-fusion/modulemanager)). A **plugin** runs code at start-up for chosen environments and receives the container (see [pluginmanager](https://github.com/echo-fusion/pluginmanager)); use one for things like a debug bar in `dev` or an error tracker in `production`.
 
+## Command line
+
+Every application gets a console. Put this in `bin/console`:
+
+```php
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use EchoFusion\Framework\Application;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+exit(Application::create(dirname(__DIR__))->runConsole($argv));
+```
+
+```bash
+php bin/console              # list the commands
+php bin/console help migrate # help for one command
+```
+
+| Command | What it does |
+| --- | --- |
+| `about` | Environment, debug flag, PHP and framework version, paths, number of routes and modules |
+| `route:list` | All routes; filter with `--method=`, `--path=`, `--name=` |
+| `config:show [key]` | The merged configuration, or one value (`database.connections.main`); secrets are masked |
+| `serve` | PHP's built-in server for `public/` (`--host=`, `--port=`, `--dry-run`) |
+| `cache:clear` | Delete the compiled templates and other files in `storage/cache` |
+| `migrate` | Run the migrations in `database/migrations` that have not run yet |
+| `migrate:rollback` | Undo the last batch |
+| `migrate:status` | Which migrations ran, which are pending |
+| `make:controller Admin/Post` | Create `app/Http/Controllers/Admin/PostController.php` |
+| `make:migration create_posts_table --create=posts` | Create a migration file |
+| `make:command SendReport` | Create a console command |
+
+Exit codes: `0` success, `1` the command failed, `2` wrong usage (unknown command or option, missing argument).
+A mistyped command name gets suggestions.
+
+### Migrations
+
+A migration is a file that returns an object with `up()` and `down()`; each one runs in a transaction.
+
+```php
+<?php
+
+use EchoFusion\Contracts\DatabaseManager\ConnectionInterface;
+use EchoFusion\Framework\Database\Migration;
+
+return new class implements Migration {
+    public function up(ConnectionInterface $db): void
+    {
+        $db->execute('CREATE TABLE posts (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL)');
+    }
+
+    public function down(ConnectionInterface $db): void
+    {
+        $db->execute('DROP TABLE posts');
+    }
+};
+```
+
+Files run in name order (`2026_01_01_120000_create_posts_table.php`); what ran is recorded in the `migrations`
+table. Use `--database=name` to migrate another connection from `config/database.php`.
+
+### Your own commands
+
+```php
+final class SendReportCommand extends Command
+{
+    public function name(): string { return 'report:send'; }
+    public function description(): string { return 'Email the weekly report'; }
+    public function arguments(): array { return ['to' => ['description' => 'Recipient', 'required' => true]]; }
+    public function options(): array { return ['dry-run' => ['description' => 'Do not send']]; }
+
+    public function handle(Input $input, Output $output): int
+    {
+        $output->info('Sending to ' . $input->argument('to'));
+
+        return self::SUCCESS;
+    }
+}
+```
+
+List the class in `config/console.php` (`return ['commands' => [SendReportCommand::class]];`). Commands given as class
+names are built by the container, so their constructors can ask for any service.
+
 ## Errors
 
 Nothing escapes `handle()`: every exception becomes a response by the error handler.
