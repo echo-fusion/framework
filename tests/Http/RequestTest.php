@@ -59,6 +59,13 @@ final class RequestTest extends TestCase
 
     public function testFormBodiesOfPutPatchAndDeleteAreReadFromTheBody(): void
     {
+        // the real front controller passes $_POST, which PHP leaves as an empty array for these methods
+        foreach (['PUT', 'PATCH', 'DELETE'] as $method) {
+            $viaGlobals = new Request($this->request($method, '/', ['Content-Type' => 'application/x-www-form-urlencoded'], 'title=From+globals&x=1')->withParsedBody([]));
+            $this->assertSame('From globals', $viaGlobals->post('title'), $method);
+            $this->assertSame('From globals', $viaGlobals->input('title'), $method);
+        }
+
         foreach (['PUT', 'PATCH', 'DELETE'] as $method) {
             $request = new Request($this->request($method, '/', ['Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8'], 'title=New+title&tags%5B%5D=a&tags%5B%5D=b'));
 
