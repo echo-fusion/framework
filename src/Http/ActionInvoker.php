@@ -21,6 +21,7 @@ use function class_exists;
 use function count;
 use function ctype_digit;
 use function filter_var;
+use function is_a;
 use function is_numeric;
 use function is_string;
 use function ltrim;
@@ -33,7 +34,8 @@ use function strtolower;
  *
  * - a parameter named like a route placeholder gets its value, converted to `int`, `float`, `bool` or `string`
  *   according to the parameter's type (`/post/{id}` with `int $id` gives an int);
- * - a parameter typed `ServerRequestInterface` gets the request;
+ * - a parameter typed `Request` (or your subclass of it) gets the framework's request helper, one typed
+ *   `ServerRequestInterface` gets the raw PSR-7 request;
  * - any other class-typed parameter is taken from the container (method injection);
  * - otherwise the default value is used.
  *
@@ -113,6 +115,9 @@ final class ActionInvoker
                 $arguments[] = $this->convert($params[$name], $typeName, $name);
             } elseif ($class !== null && $request instanceof $class) {
                 $arguments[] = $request;
+            } elseif ($class !== null && is_a($class, Request::class, true)) {
+                // the framework's Request, or your own subclass of it
+                $arguments[] = new $class($request);
             } elseif ($class !== null && $this->container->has($class)) {
                 $arguments[] = $this->container->get($class);
             } elseif ($parameter->isDefaultValueAvailable()) {

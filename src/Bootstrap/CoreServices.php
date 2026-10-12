@@ -22,6 +22,7 @@ use EchoFusion\Framework\Http\ActionInvoker;
 use EchoFusion\Framework\Http\ErrorHandler;
 use EchoFusion\Framework\Http\ErrorHandlerInterface;
 use EchoFusion\Framework\Http\GlobalsRequestFactory;
+use EchoFusion\Framework\Http\Middleware\VerifyCsrfToken;
 use EchoFusion\Framework\Http\ResponseConverter;
 use EchoFusion\Framework\Http\ResponseEmitter;
 use EchoFusion\Framework\Http\RouteHandler;
@@ -127,6 +128,15 @@ final class CoreServices
         $container->set(ActionInvoker::class, static fn (ContainerInterface $c): ActionInvoker => new ActionInvoker($c), true);
         $container->set(ResponseConverter::class, static fn (): ResponseConverter => new ResponseConverter(), true);
         $container->set(GlobalsRequestFactory::class, static fn (): GlobalsRequestFactory => new GlobalsRequestFactory(), true);
+        $container->set(VerifyCsrfToken::class, static function (ContainerInterface $c) use ($config): VerifyCsrfToken {
+            $except = $config->get('app.csrf.except', []);
+            $field = $config->get('app.csrf.field', '_token');
+
+            /** @var list<string> $patterns */
+            $patterns = is_array($except) ? array_values($except) : [];
+
+            return new VerifyCsrfToken($c->get(SessionInterface::class), $patterns, is_string($field) ? $field : '_token');
+        }, true);
         $container->set(ResponseEmitter::class, static fn (): ResponseEmitter => new ResponseEmitter(), true);
 
         $container->set(MiddlewareManagerInterface::class, static function (ContainerInterface $c) use ($config): MiddlewareManagerInterface {
