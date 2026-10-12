@@ -87,10 +87,63 @@ Response ◄─ ResponsePrepared ◄──────────────�
 * The route's middleware runs inside the global middleware. A name is looked up in `middleware.route`; a class name works too.
 * The **action** is a closure, `[Controller::class, 'method']` (the controller is built by the container) or the name of an invokable class. Its arguments come from the signature:
   * a parameter named like a route placeholder gets the value, URL-decoded (`/hello/caf%C3%A9` gives `café`) and converted to the parameter's type (`/posts/{id}` with `int $id` gives an int; a value that is not a number is a 404);
-  * `ServerRequestInterface` gets the request; the placeholders are also request attributes (`route`, `route.params`, `id`);
+  * `Request` (the helper described below, or your subclass of it) or `ServerRequestInterface` (raw PSR-7) gets the request; the placeholders are also request attributes (`route`, `route.params`, `id`);
   * any other class type is taken from the container;
   * otherwise the default value is used.
 * What the action returns becomes the response: a PSR-7 response as it is, text as HTML, `null` as an empty 204, anything else (array, object, number) as JSON.
+
+## Reading the request: `Request`
+
+Ask for `Request` as an action argument and read GET, POST and JSON data without touching PSR-7:
+
+```php
+use EchoFusion\Framework\Http\Request;
+
+public function store(Request $request): array
+{
+    $title = $request->input('title');          // form field, JSON field or query string, in that order of priority
+    $page  = $request->query('page', 1);        // only ?page=
+    $email = $request->post('email');           // only the submitted form
+    $tag   = $request->json('tags.0');          // only the JSON body, dot keys reach inside
+    $data  = $request->only('title', 'body');   // just these keys
+    $age   = $request->int('age');              // typed: int(), float(), string(), bool()
+
+    $request->method();  $request->path();  $request->header('Accept');  $request->cookie('theme');
+    $request->file('avatar');                   // a PSR-7 UploadedFileInterface
+    $request->bearerToken();  $request->wantsJson();  $request->ip();
+    $request->user();                           // the authenticated user (after the 'auth' middleware)
+    $request->attribute('id');                  // a route placeholder
+    $request->psr();                            // the PSR-7 request itself
+}
+```
+
+* `input()` merges the query string under the body, so the body wins. `all()`, `has()`, `filled()`, `only()` and `except()` work on that merged data and accept dot keys (`filter.status`).
+* Forms of `PUT`, `PATCH` and `DELETE` are read from the body too (PHP only fills `$_POST` for `POST`). A body marked as JSON that is not valid JSON answers `400`.
+* Need the raw PSR-7 request? Type-hint `ServerRequestInterface` instead.
+* **Your own request type:** `final class StorePostRequest extends Request { public function title(): string { ... } }` and type-hint that in the action; the framework builds it. It is a good place for validation.
+
+## CSRF protection
+
+`Http\Middleware\VerifyCsrfToken` protects every form against cross-site request forgery. Every session gets a random token; a request that changes something (not `GET`, `HEAD` or `OPTIONS`) must send it back as the field `_token` or the header `X-CSRF-TOKEN`, otherwise the answer is `419 Page Expired`.
+
+```php
+// config/middleware.php
+'core' => [StartSessionMiddleware::class, VerifyCsrfToken::class],
+```
+
+```php
+// config/app.php: paths that need no token. APIs that authenticate with a header token are not exposed to CSRF.
+'csrf' => ['except' => ['/api/*']],
+```
+
+```html
+<form method="post" action="/posts">
+    <input type="hidden" name="_token" value="{{ csrf }}">   <!-- the action passes ['csrf' => $request->csrfToken()] -->
+    ...
+</form>
+```
+
+JavaScript calls send the token in the `X-CSRF-TOKEN` header.
 
 ## Configuration
 
