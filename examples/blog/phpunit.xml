@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+        colors="true"
+        bootstrap="vendor/autoload.php"
+        cacheResultFile=".phpunit.cache/test-results"
+>
+    <php>
+        <env name="DB_DATABASE" value="storage/testing.sqlite" force="true"/>
+    </php>
+    <testsuites>
+        <testsuite name="Application">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

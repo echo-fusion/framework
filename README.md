@@ -6,6 +6,8 @@ The EchoFusion framework: a small kernel that boots configuration, modules, serv
 
 > Part of [EchoFusion](https://github.com/echo-fusion), a modular PHP framework built from small packages.
 
+Documentation: **[docs/](docs/README.md)**, and a complete example application in **[examples/blog](examples/blog)**.
+
 ## Start a project
 
 Most people want the skeleton, which contains the folders, config files and front controller:

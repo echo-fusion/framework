@@ -9,3 +9,5 @@
 /phpunit.xml export-ignore
 /psalm.xml export-ignore
 /composer.lock export-ignore
+/examples export-ignore
+/docs export-ignore
