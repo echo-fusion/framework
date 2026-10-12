@@ -26,13 +26,16 @@ use EchoFusion\Framework\Events\ExceptionRaised;
 use EchoFusion\Framework\Events\RequestReceived;
 use EchoFusion\Framework\Events\ResponsePrepared;
 use EchoFusion\Framework\Exceptions\ConfigurationException;
+use EchoFusion\Framework\Exceptions\HttpException;
 use EchoFusion\Framework\Http\ErrorHandlerInterface;
+use EchoFusion\Framework\Http\GlobalsRequestFactory;
 use EchoFusion\Framework\Http\ResponseEmitter;
 use EchoFusion\Framework\Http\RouteHandler;
 use EchoFusion\ModuleManager\ModuleManager;
 use EchoFusion\ServiceManager\ServiceManager;
 use EchoFusion\TemplateManager\Providers\TemplateManagerProvider;
 use GuzzleHttp\Psr7\ServerRequest;
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
@@ -201,10 +204,20 @@ final class Application
      */
     public function run(?ServerRequestInterface $request = null): void
     {
-        $request ??= ServerRequest::fromGlobals();
-
         $this->boot();
-        $this->container->get(ResponseEmitter::class)->emit($this->handle($request), $request);
+        $emitter = $this->container->get(ResponseEmitter::class);
+
+        try {
+            $request ??= $this->container->get(GlobalsRequestFactory::class)->create();
+        } catch (InvalidArgumentException $malformed) {
+            // the client sent something PSR-7 cannot represent: answer 400 instead of dying with a PHP error that shows file paths
+            $fallback = new ServerRequest('GET', '/');
+            $emitter->emit($this->container->get(ErrorHandlerInterface::class)->handle(new HttpException(400, 'The request is malformed.', [], $malformed), $fallback), $fallback);
+
+            return;
+        }
+
+        $emitter->emit($this->handle($request), $request);
     }
 
     public function getContainer(): ServiceManager

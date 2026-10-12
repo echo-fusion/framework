@@ -208,6 +208,7 @@ Nothing escapes `handle()`: every exception becomes a response by the error hand
 * `Exceptions\HttpException` answers with its own status, so a controller can `throw new HttpException(403, 'You cannot edit this post.')`.
 * API clients (`Accept: application/json`) get JSON; everyone else gets HTML, from the template `errors/<status>` or `errors/error` when they exist, otherwise from a small built-in page.
 * With `app.debug` on, the message, class, file and trace are shown. With it off, a server error only says "Internal Server Error".
+* A request that PSR-7 cannot represent (for example a malformed header name sent by the client) is answered with `400 Bad Request` by `run()`, instead of a PHP error that would show file paths. The request is built by `Http\GlobalsRequestFactory`, a service you can replace.
 * Bind a PSR-3 `LoggerInterface` in the container and server errors are logged.
 * Replace everything by binding your own `Http\ErrorHandlerInterface`.
 
