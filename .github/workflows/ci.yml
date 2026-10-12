@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: PHP ${{ matrix.php }} / ${{ matrix.deps }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.1', '8.2', '8.3']
+        deps: ['locked', 'lowest', 'highest']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer
+          coverage: ${{ (matrix.php == '8.3' && matrix.deps == 'locked') && 'xdebug' || 'none' }}
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --check-lock
+
+      - name: Install dependencies (locked)
+        if: matrix.deps == 'locked'
+        run: composer install --no-progress --prefer-dist
+
+      - name: Install dependencies (lowest contracts)
+        if: matrix.deps == 'lowest'
+        run: composer update echo-fusion/contracts --prefer-lowest --no-progress --prefer-dist
+
+      - name: Install dependencies (highest contracts)
+        if: matrix.deps == 'highest'
+        run: composer update echo-fusion/contracts --no-progress --prefer-dist
+
+      - name: Check code style
+        run: composer cs-check
+
+      - name: Static analysis
+        run: composer analyze
+
+      - name: Run PHPUnit tests
+        if: matrix.php != '8.3' || matrix.deps != 'locked'
+        run: composer phpunit
+
+      - name: Run PHPUnit tests with coverage
+        if: matrix.php == '8.3' && matrix.deps == 'locked'
+        run: |
+          set -o pipefail
+          vendor/bin/phpunit --coverage-text --colors=never | tee coverage.txt
+        shell: bash
+
+      - name: Check coverage percentage
+        if: matrix.php == '8.3' && matrix.deps == 'locked'
+        run: |
+          coverage=$(awk '/^ *Lines:/ {print $2}' coverage.txt | tr -d '%' | cut -d. -f1 | head -n1)
+          if [ -z "$coverage" ]; then
+            echo "Could not read the coverage percentage from coverage.txt."
+            exit 1
+          fi
+          echo "Line coverage: ${coverage}%"
+          {
+            echo "### Code coverage"
+            echo '```'
+            sed -n '/Summary:/,/^$/p' coverage.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$coverage" -lt 80 ]; then
+            echo "Code coverage is below 80% ($coverage%). Pull request cannot be accepted."
+            exit 1
+          fi
+        shell: bash

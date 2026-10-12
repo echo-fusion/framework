@@ -1,0 +1,14 @@
+/vendor/
+/composer.phar
+
+# tools
+.phpunit.cache/
+.phpunit.result.cache
+.php-cs-fixer.cache
+/coverage*
+/coverage.txt
+
+# editors and OS
+.idea/
+.vscode/
+.DS_Store
