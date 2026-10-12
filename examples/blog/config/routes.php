@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\Admin;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
@@ -19,9 +20,28 @@ use App\Http\Controllers\PostController;
  */
 $id = ['id' => '[0-9]+'];
 
+/**
+ * Everything under /admin: signed in AND an administrator. One place for the prefix and the middleware.
+ *
+ * @param array<string, array<string, mixed>> $routes name => route, with the path relative to /admin
+ *
+ * @return array<string, array<string, mixed>>
+ */
+$admin = static function (array $routes): array {
+    $prefixed = [];
+    foreach ($routes as $name => $route) {
+        $route['path'] = '/admin' . $route['path'];
+        $route['middlewares'] = ['auth', 'admin'];
+        $prefixed['admin.' . $name] = $route;
+    }
+
+    return $prefixed;
+};
+
 return [
     // reading
     'posts.index' => ['method' => 'GET', 'path' => '/', 'action' => [PostController::class, 'index']],
+    'posts.mine' => ['method' => 'GET', 'path' => '/my-posts', 'action' => [PostController::class, 'mine'], 'middlewares' => ['auth']],
     'posts.show' => ['method' => 'GET', 'path' => '/posts/{id}', 'action' => [PostController::class, 'show'], 'constraints' => $id],
 
     // writing (signed-in users)
@@ -48,4 +68,19 @@ return [
     'api.posts.patch' => ['method' => 'PATCH', 'path' => '/api/posts/{id}', 'action' => [ApiController::class, 'update'], 'constraints' => $id, 'middlewares' => ['api']],
     'api.posts.destroy' => ['method' => 'DELETE', 'path' => '/api/posts/{id}', 'action' => [ApiController::class, 'destroy'], 'constraints' => $id, 'middlewares' => ['api']],
     'api.me' => ['method' => 'GET', 'path' => '/api/me', 'action' => [ApiController::class, 'me'], 'middlewares' => ['api']],
+
+    // administration (prefix /admin)
+    ...$admin([
+        'dashboard' => ['method' => 'GET', 'path' => '', 'action' => [Admin\DashboardController::class, 'index']],
+        'posts' => ['method' => 'GET', 'path' => '/posts', 'action' => [Admin\PostController::class, 'index']],
+        'posts.create' => ['method' => 'GET', 'path' => '/posts/create', 'action' => [Admin\PostController::class, 'create']],
+        'posts.store' => ['method' => 'POST', 'path' => '/posts', 'action' => [Admin\PostController::class, 'store']],
+        'posts.edit' => ['method' => 'GET', 'path' => '/posts/{id}/edit', 'action' => [Admin\PostController::class, 'edit'], 'constraints' => $id],
+        'posts.update' => ['method' => 'POST', 'path' => '/posts/{id}/edit', 'action' => [Admin\PostController::class, 'update'], 'constraints' => $id],
+        'posts.toggle' => ['method' => 'POST', 'path' => '/posts/{id}/toggle', 'action' => [Admin\PostController::class, 'toggle'], 'constraints' => $id],
+        'posts.destroy' => ['method' => 'POST', 'path' => '/posts/{id}/delete', 'action' => [Admin\PostController::class, 'destroy'], 'constraints' => $id],
+        'users' => ['method' => 'GET', 'path' => '/users', 'action' => [Admin\UserController::class, 'index']],
+        'users.role' => ['method' => 'POST', 'path' => '/users/{id}/role', 'action' => [Admin\UserController::class, 'role'], 'constraints' => $id],
+        'users.destroy' => ['method' => 'POST', 'path' => '/users/{id}/delete', 'action' => [Admin\UserController::class, 'destroy'], 'constraints' => $id],
+    ]),
 ];

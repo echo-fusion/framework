@@ -5,39 +5,34 @@ declare(strict_types=1);
 namespace Tests;
 
 use EchoFusion\Contracts\DatabaseManager\ConnectionInterface;
-use EchoFusion\Framework\Database\MigrationRunner;
 use GuzzleHttp\Psr7\ServerRequest;
 use Psr\Http\Message\ResponseInterface;
 use const JSON_THROW_ON_ERROR;
-use function dirname;
-use function file_exists;
-use function hash;
 use function http_build_query;
 use function json_decode;
 use function json_encode;
-use function unlink;
 
 /**
  * The JSON API, end to end: routing, token authentication, `Request` in the controller, the database.
  * Every test starts with a fresh SQLite file that the real migrations have filled.
  */
-final class ApiTest extends TestCase
+final class ApiTest extends DatabaseTestCase
 {
-    private const ANN = 'ann-token';
-
-    private const BOB = 'bob-token';
-
-    protected function setUp(): void
+    public function testDraftsAreNotPublic(): void
     {
-        $file = dirname(__DIR__) . '/storage/testing.sqlite';
-        file_exists($file) && unlink($file);
+        $this->api('POST', '/api/posts', ['title' => 'Secret', 'body' => 'x'], self::ANN);
+        $this->app()->getContainer()->get(ConnectionInterface::class)->execute("UPDATE posts SET status = 'draft'");
 
-        $db = $this->app()->getContainer()->get(ConnectionInterface::class);
-        (new MigrationRunner($db, dirname(__DIR__) . '/database/migrations'))->migrate();
+        $this->assertSame(0, $this->decode($this->api('GET', '/api/posts'))['total']);
+        $this->assertSame(404, $this->api('GET', '/api/posts/1')->getStatusCode());
+    }
 
-        foreach ([[1, 'Ann', self::ANN], [2, 'Bob', self::BOB]] as [$id, $name, $token]) {
-            $db->execute('INSERT INTO users (id, name, email, password, api_token) VALUES (?, ?, ?, ?, ?)', [$id, $name, strtolower($name) . '@example.com', 'x', hash('sha256', $token)]);
-        }
+    public function testAnAdminMayChangeAnyPost(): void
+    {
+        $this->api('POST', '/api/posts', ['title' => 'Mine', 'body' => 'x'], self::ANN);
+
+        $this->assertSame(200, $this->api('PUT', '/api/posts/1', ['title' => 'Moderated', 'body' => 'x'], self::ADMIN)->getStatusCode());
+        $this->assertSame(204, $this->api('DELETE', '/api/posts/1', null, self::ADMIN)->getStatusCode());
     }
 
     public function testReadingIsPublic(): void
@@ -65,7 +60,7 @@ final class ApiTest extends TestCase
     {
         $me = $this->decode($this->api('GET', '/api/me', null, self::BOB))['data'];
 
-        $this->assertSame(['id' => 2, 'name' => 'Bob', 'email' => 'bob@example.com'], $me);
+        $this->assertSame(['id' => 3, 'name' => 'Bob', 'email' => 'bob@example.com'], $me);
     }
 
     public function testCreateValidatesTheJsonBody(): void

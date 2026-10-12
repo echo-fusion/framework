@@ -13,11 +13,13 @@ return new class implements Migration {
             user_id INTEGER NOT NULL,
             title VARCHAR(200) NOT NULL,
             body TEXT NOT NULL,
+            status VARCHAR(20) NOT NULL DEFAULT \'published\',
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
         )');
         $db->execute('CREATE INDEX posts_user_id ON posts (user_id)');
+        $db->execute('CREATE INDEX posts_status ON posts (status)');
     }
 
     public function down(ConnectionInterface $db): void

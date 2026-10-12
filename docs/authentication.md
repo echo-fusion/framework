@@ -40,6 +40,8 @@ The session id is regenerated on login and logout. Never store or compare passwo
 'login'        => [..., 'middlewares' => ['guest']],    // only for visitors who are not signed in
 ```
 
+Roles are your own column and middleware: the example has an `admin` middleware ([RequireAdmin](../examples/blog/app/Http/Middleware/RequireAdmin.php)) used as `['auth', 'admin']`, and an `Access` class for the per-post rules.
+
 Where they redirect is `auth.middleware` in `config/auth.php`. In a route with `auth`, `$request->user()` is the user. Authorization (may *this* user change *this* post?) is your code: compare ids and throw `HttpException(403)`, as in `PostController::owned()`.
 
 ## API tokens
