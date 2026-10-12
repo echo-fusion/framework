@@ -1,0 +1,83 @@
+{
+    "name": "echo-fusion/framework",
+    "description": "The EchoFusion framework: a kernel that boots configuration, modules, service providers, events and plugins and turns a PSR-7 request into a response, built from small replaceable packages.",
+    "keywords": [
+        "framework",
+        "psr-7",
+        "psr-11",
+        "psr-14",
+        "psr-15",
+        "echofusion"
+    ],
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/echo-fusion/framework",
+    "authors": [
+        {
+            "name": "Amir Shadanfar",
+            "email": "a.shadanfar.it@gmail.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/echo-fusion/framework/issues",
+        "source": "https://github.com/echo-fusion/framework"
+    },
+    "require": {
+        "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
+        "ext-mbstring": "*",
+        "echo-fusion/contracts": "^2.0",
+        "echo-fusion/servicemanager": "^3.1",
+        "echo-fusion/configmanager": "^1.0",
+        "echo-fusion/routemanager": "^3.0",
+        "echo-fusion/middlewaremanager": "^2.1",
+        "echo-fusion/eventmanager": "^2.0",
+        "echo-fusion/pluginmanager": "^3.0",
+        "echo-fusion/modulemanager": "^1.0",
+        "echo-fusion/sessionmanager": "^1.0",
+        "echo-fusion/responsemanager": "^1.0",
+        "echo-fusion/templatemanager": "^1.0",
+        "echo-fusion/databasemanager": "^1.0",
+        "echo-fusion/authmanager": "^1.0",
+        "guzzlehttp/psr7": "^2.5",
+        "psr/log": "^1.1 || ^2.0 || ^3.0",
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "vimeo/psalm": "^5.26",
+        "friendsofphp/php-cs-fixer": "^3.64",
+        "echo-fusion/codestandard": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "EchoFusion\\Framework\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "EchoFusion\\Framework\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "platform": {
+            "php": "8.1.0"
+        }
+    },
+    "scripts": {
+        "test": [
+            "@cs-check",
+            "@analyze",
+            "@phpunit"
+        ],
+        "phpunit": "vendor/bin/phpunit",
+        "test:coverage:text": "vendor/bin/phpunit --coverage-text",
+        "cs-fix": "php-cs-fixer fix --config=.php-cs-fixer.dist.php",
+        "cs-check": "php-cs-fixer fix --dry-run --diff",
+        "analyze": "psalm --show-info=false --no-cache --no-progress"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
