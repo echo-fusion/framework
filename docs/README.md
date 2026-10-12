@@ -15,4 +15,4 @@ Read in this order the first time; later use it as a reference.
 11. [Testing](testing.md)
 12. [Deployment](deployment.md)
 
-A complete example application is in [examples/blog](../examples/blog).
+Learn by example: [Tutorial: how the example blog works](tutorial-blog.md). The application is in [examples/blog](../examples/blog) and installs with `composer create-project echo-fusion/echo-fusion my-blog dev-blog`.
