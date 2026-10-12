@@ -50,8 +50,8 @@ final class UserRepository
     }
 
     /**
-     * Removes the user and their posts. The posts are deleted explicitly, in one transaction, because SQLite
-     * ignores `ON DELETE CASCADE` unless foreign keys are switched on for the connection.
+     * Removes the user and their posts in one transaction. The foreign key would cascade by itself, but being
+     * explicit keeps this working on a database or connection that does not enforce foreign keys.
      */
     public function delete(int $id): void
     {
