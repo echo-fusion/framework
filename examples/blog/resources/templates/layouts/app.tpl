@@ -30,6 +30,13 @@
         .errors p, .flash p { margin: 0; }
         code, pre { border: 1px solid var(--line); border-radius: 4px; padding: .1rem .3rem; }
         pre { padding: .75rem; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: .4rem .5rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+        .badge { display: inline-block; padding: 0 .5rem; font-size: .75rem; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); }
+        .badge.draft { border-color: var(--bad); color: var(--bad); }
+        .search { display: flex; gap: .5rem; margin: 0 0 1rem; }
+        .search input { flex: 1; }
+        .search button { margin: 0; }
         .pager { display: flex; justify-content: space-between; margin-top: 1rem; }
     </style>
 </head>
@@ -39,6 +46,8 @@
         <a class="brand" href="/">{{ appName }}</a>
         {% if me %}
             <a href="/posts/create">Write</a>
+            <a href="/my-posts">My posts</a>
+            {% if me.admin %}<a href="/admin">Admin</a>{% endif %}
             <a href="/account">API token</a>
             <span class="muted">{{ me.name }}</span>
             <form method="post" action="/logout"><input type="hidden" name="_token" value="{{ csrf }}"><button class="link" type="submit">Sign out</button></form>

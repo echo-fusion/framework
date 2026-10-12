@@ -19,6 +19,7 @@ final class View
         private readonly TemplateManagerInterface $templates,
         private readonly AuthManagerInterface $auth,
         private readonly SessionInterface $session,
+        private readonly Access $access,
     ) {
     }
 
@@ -31,7 +32,7 @@ final class View
 
         return $this->templates->render($template, $data + [
             'csrf' => $request->csrfToken(),
-            'me' => $user === null ? null : ['id' => $user->getAuthIdentifier(), 'name' => $user instanceof GenericUser ? (string) $user->get('name', '') : ''],
+            'me' => $user === null ? null : ['id' => $user->getAuthIdentifier(), 'name' => $user instanceof GenericUser ? (string) $user->get('name', '') : '', 'admin' => $this->access->isAdmin($user)],
             'success' => $this->session->getFlash('success'),
             'errors' => $this->session->getFlash('errors'),
             'old' => $this->session->getFlash('old'),

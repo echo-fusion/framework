@@ -14,6 +14,7 @@ return new class implements Migration {
             name VARCHAR(100) NOT NULL,
             email VARCHAR(190) NOT NULL UNIQUE,
             password VARCHAR(255) NOT NULL,
+            role VARCHAR(20) NOT NULL DEFAULT \'user\',
             api_token VARCHAR(64) NULL UNIQUE,
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         )');

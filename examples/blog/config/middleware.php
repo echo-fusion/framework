@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Middleware\AuthenticateApi;
+use App\Http\Middleware\RequireAdmin;
 use EchoFusion\AuthManager\Middleware\AuthenticateMiddleware;
 use EchoFusion\AuthManager\Middleware\GuestMiddleware;
 use EchoFusion\Framework\Http\Middleware\VerifyCsrfToken;
@@ -19,6 +20,7 @@ return [
     'route' => [
         'auth' => AuthenticateMiddleware::class,
         'guest' => GuestMiddleware::class,
+        'admin' => RequireAdmin::class,    // use after 'auth': ['auth', 'admin']
         'api' => AuthenticateApi::class,   // a valid `Authorization: Bearer <token>` header
     ],
 ];

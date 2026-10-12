@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Repositories\PostRepository;
+use App\Support\Access;
 use EchoFusion\AuthManager\Users\GenericUser;
 use EchoFusion\Framework\Exceptions\HttpException;
 use EchoFusion\Framework\Http\Request;
@@ -15,7 +16,7 @@ use EchoFusion\Framework\Http\Request;
  */
 final class ApiController
 {
-    public function __construct(private readonly PostRepository $posts)
+    public function __construct(private readonly PostRepository $posts, private readonly Access $access)
     {
     }
 
@@ -35,7 +36,10 @@ final class ApiController
      */
     public function show(int $id): array
     {
-        return ['data' => $this->posts->find($id) ?? throw new HttpException(404, 'There is no such post.')];
+        $post = $this->posts->find($id);
+
+        // drafts are not public
+        return ['data' => $post !== null && $post['status'] === PostRepository::PUBLISHED ? $post : throw new HttpException(404, 'There is no such post.')];
     }
 
     /**
@@ -99,7 +103,7 @@ final class ApiController
     private function ownedPost(Request $request, int $id): array
     {
         $post = $this->posts->find($id) ?? throw new HttpException(404, 'There is no such post.');
-        if ((string) $post['user_id'] !== (string) $request->user()?->getAuthIdentifier()) {
+        if (!$this->access->canManage($request->user(), $post)) {
             throw new HttpException(403, 'You can only change your own posts.');
         }
 
