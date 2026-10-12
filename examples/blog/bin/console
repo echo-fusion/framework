@@ -1,0 +1,11 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use EchoFusion\Framework\Application;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+// php bin/console            lists the commands
+exit(Application::create(\dirname(__DIR__))->runConsole($argv));

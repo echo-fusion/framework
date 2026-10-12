@@ -1,0 +1,60 @@
+{
+    "name": "echo-fusion/blog-example",
+    "description": "A small blog built with the EchoFusion framework: accounts, posts, CSRF forms, a JSON API with tokens.",
+    "keywords": [
+        "example",
+        "blog",
+        "echofusion"
+    ],
+    "type": "project",
+    "license": "MIT",
+    "homepage": "https://github.com/echo-fusion/framework/tree/main/examples/blog",
+    "authors": [
+        {
+            "name": "Amir Shadanfar",
+            "email": "a.shadanfar.it@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
+        "echo-fusion/framework": "^1.2.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "friendsofphp/php-cs-fixer": "^3.64",
+        "echo-fusion/codestandard": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true
+    },
+    "scripts": {
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "serve": "@php -S localhost:8000 -t public",
+        "console": "@php bin/console",
+        "test": "phpunit",
+        "cs-fix": "php-cs-fixer fix --config=.php-cs-fixer.dist.php",
+        "cs-check": "php-cs-fixer fix --dry-run --diff"
+    },
+    "scripts-descriptions": {
+        "serve": "Start the PHP development server on http://localhost:8000",
+        "console": "Run a console command: composer console -- route:list",
+        "test": "Run the tests",
+        "cs-check": "Check the code style",
+        "cs-fix": "Fix the code style"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
